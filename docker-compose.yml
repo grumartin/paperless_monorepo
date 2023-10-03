@@ -9,3 +9,11 @@ services:
     ports:
     - 8080:8080
     container_name: paperless-rest
+  paperless-ui:
+    build:
+      context: ./apps/paperless-ui
+      dockerfile: Dockerfile
+    image: paperless-ui
+    ports:
+      - 4200:80
+    container_name: paperless-ui
