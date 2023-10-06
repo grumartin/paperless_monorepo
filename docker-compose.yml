@@ -16,4 +16,11 @@ services:
     image: paperless-ui
     ports:
       - 4200:80
+    configs:
+      - source: nginx-config
+        target: /etc/nginx/nginx.conf
     container_name: paperless-ui
+
+configs:
+  nginx-config:
+    file: nginx/nginx.conf
