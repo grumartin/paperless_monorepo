@@ -59,7 +59,7 @@ public interface WsApi {
     default ResponseEntity<Void> get(
         
     ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
