@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: paperless-rest
     ports:
-    - 8080:8080
+    - 8087:8087
     container_name: paperless-rest
   paperless-ui:
     build:
@@ -20,7 +20,21 @@ services:
       - source: nginx-config
         target: /etc/nginx/nginx.conf
     container_name: paperless-ui
+  paperless-db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    container_name: paperless-db
 
 configs:
   nginx-config:
     file: nginx/nginx.conf
+
+volumes:
+  db:
+    driver: local

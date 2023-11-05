@@ -11,5 +11,5 @@ RUN mvn -f /home/app/pom.xml clean package
 #
 FROM openjdk:17
 COPY --from=build /home/app/target/paperless-rest-1.0.jar /usr/local/lib/paperless-rest.jar
-EXPOSE 8080
+EXPOSE 8087
 ENTRYPOINT ["java", "-jar", "/usr/local/lib/paperless-rest.jar"]
