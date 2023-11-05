@@ -44,7 +44,7 @@ public class DocumentMappingTest {
         document.setAdded(added);
         document.setArchiveSerialNumber(Integer.valueOf(archiveSerialNumber));
         document.setArchiveFilename(archivedFileName);
-        // document.setOriginalFileName(originalFileName);
+        document.setOriginalFilename(originalFileName);
 
         // TODO:
         /*
@@ -70,7 +70,7 @@ public class DocumentMappingTest {
         expectedDocumentDto.setAdded(added);
         expectedDocumentDto.setArchiveSerialNumber(JsonNullable.of(archiveSerialNumber));
         expectedDocumentDto.setArchivedFileName(JsonNullable.of(archivedFileName));
-        // expectedDocumentDto.setOriginalFileName(JsonNullable.of(originalFileName));
+        expectedDocumentDto.setOriginalFileName(JsonNullable.of(originalFileName));
 
         // TODO:
         /*

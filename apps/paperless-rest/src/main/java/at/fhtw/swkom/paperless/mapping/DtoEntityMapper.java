@@ -10,10 +10,13 @@ import at.fhtw.swkom.paperless.services.dto.DocTag;
 import at.fhtw.swkom.paperless.services.dto.Document;
 import at.fhtw.swkom.paperless.services.dto.NewTag;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.openapitools.jackson.nullable.JsonNullable;
 
 @Mapper
 public interface DtoEntityMapper {
+    @Mapping(target = "originalFileName", source = "originalFilename")
+    @Mapping(target = "archivedFileName", source = "archiveFilename")
     Document documentEntityToDto(DocumentsDocument documentsDocument);
     DocumentsDocument documentDtoToEntity(Document document);
     default JsonNullable<Integer> map(Correspondent correspondent) {
@@ -25,6 +28,7 @@ public interface DtoEntityMapper {
     default JsonNullable<Integer> map(Storagepath storagepath) {
         return storagepath!=null ? JsonNullable.of(storagepath.getId()) : JsonNullable.undefined();
     }
+
     NewTag tagDtoToEntity(Tag tag);
     Tag tagEntityToTag(NewTag newTag);
 //    DocTag docTagDtoToEntity(Tag tag);
