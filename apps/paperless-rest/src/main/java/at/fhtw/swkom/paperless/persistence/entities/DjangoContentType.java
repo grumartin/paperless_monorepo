@@ -12,10 +12,10 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "DjangoContentTypes")
 @Getter
 @Setter
-public class AuthPermission {
+public class DjangoContentType {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -31,13 +31,10 @@ public class AuthPermission {
     )
     private Integer id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, length = 100)
+    private String appLabel;
 
     @Column(nullable = false, length = 100)
-    private String contentType;
-
-    @Column(nullable = false, length = 100)
-    private String codename;
+    private String model;
 
 }

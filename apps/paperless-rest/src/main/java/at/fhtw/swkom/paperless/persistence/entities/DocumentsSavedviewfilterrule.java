@@ -2,9 +2,12 @@ package at.fhtw.swkom.paperless.persistence.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -12,10 +15,10 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "DocumentsSavedviewfilterrules")
 @Getter
 @Setter
-public class AuthPermission {
+public class DocumentsSavedviewfilterrule {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -32,12 +35,13 @@ public class AuthPermission {
     private Integer id;
 
     @Column(nullable = false)
-    private String name;
+    private Integer ruleType;
 
-    @Column(nullable = false, length = 100)
-    private String contentType;
+    @Column
+    private String value;
 
-    @Column(nullable = false, length = 100)
-    private String codename;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "saved_view_id", nullable = false)
+    private DocumentsSavedview savedView;
 
 }

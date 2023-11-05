@@ -7,15 +7,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "DocumentsPaperlesstasks")
 @Getter
 @Setter
-public class AuthPermission {
+public class DocumentsPaperlesstask {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -32,12 +33,30 @@ public class AuthPermission {
     private Integer id;
 
     @Column(nullable = false)
-    private String name;
+    private String taskId;
 
-    @Column(nullable = false, length = 100)
-    private String contentType;
+    @Column(nullable = false)
+    private Boolean acknowledged;
 
-    @Column(nullable = false, length = 100)
-    private String codename;
+    @Column
+    private OffsetDateTime dateCreated;
+
+    @Column
+    private OffsetDateTime dateDone;
+
+    @Column
+    private OffsetDateTime dateStarted;
+
+    @Column(columnDefinition = "text")
+    private String result;
+
+    @Column(nullable = false, length = 30)
+    private String status;
+
+    @Column
+    private String taskFileName;
+
+    @Column
+    private String taskName;
 
 }

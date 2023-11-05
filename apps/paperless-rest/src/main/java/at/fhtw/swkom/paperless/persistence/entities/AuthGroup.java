@@ -5,12 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
+@Table(name = "AuthGroups")
 @Getter
 @Setter
 public class AuthGroup {
@@ -31,5 +35,8 @@ public class AuthGroup {
 
     @Column(nullable = false, length = 150)
     private String name;
+
+    @OneToMany(mappedBy = "group")
+    private Set<AuthGroupPermissions> groupAuthGroupPermissions;
 
 }

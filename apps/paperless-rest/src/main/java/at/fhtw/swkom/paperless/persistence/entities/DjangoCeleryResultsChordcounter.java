@@ -12,10 +12,10 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "DjangoCeleryResultsChordcounters")
 @Getter
 @Setter
-public class AuthPermission {
+public class DjangoCeleryResultsChordcounter {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -31,13 +31,13 @@ public class AuthPermission {
     )
     private Integer id;
 
+    @Column(nullable = false, unique = true)
+    private String groupId;
+
+    @Column(nullable = false, columnDefinition = "text")
+    private String subTasks;
+
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false, length = 100)
-    private String contentType;
-
-    @Column(nullable = false, length = 100)
-    private String codename;
+    private Integer count;
 
 }

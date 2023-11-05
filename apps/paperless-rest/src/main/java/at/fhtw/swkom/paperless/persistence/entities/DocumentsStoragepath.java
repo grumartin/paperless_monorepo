@@ -2,20 +2,25 @@ package at.fhtw.swkom.paperless.persistence.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "DocumentsStoragepaths")
 @Getter
 @Setter
-public class AuthPermission {
+public class DocumentsStoragepath {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -31,13 +36,26 @@ public class AuthPermission {
     )
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 128)
     private String name;
 
-    @Column(nullable = false, length = 100)
-    private String contentType;
+    @Column(nullable = false, length = 256)
+    private String match;
 
-    @Column(nullable = false, length = 100)
-    private String codename;
+    @Column(nullable = false)
+    private Integer matchingAlgorithm;
+
+    @Column(nullable = false)
+    private Boolean isInsensitive;
+
+    @Column(nullable = false, length = 512)
+    private String path;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private AuthUser owner;
+
+    @OneToMany(mappedBy = "storagePath")
+    private Set<DocumentsDocument> storagePathDocumentsDocuments;
 
 }

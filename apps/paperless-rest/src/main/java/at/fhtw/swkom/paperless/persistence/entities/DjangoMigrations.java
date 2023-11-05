@@ -7,15 +7,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "DjangoMigrations")
 @Getter
 @Setter
-public class AuthPermission {
+public class DjangoMigrations {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -32,12 +33,12 @@ public class AuthPermission {
     private Integer id;
 
     @Column(nullable = false)
+    private String app;
+
+    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 100)
-    private String contentType;
-
-    @Column(nullable = false, length = 100)
-    private String codename;
+    @Column(nullable = false)
+    private OffsetDateTime applied;
 
 }

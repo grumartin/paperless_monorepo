@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.Set;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import lombok.Setter;
 
 
 @Entity
+@Table(name = "AuthUsers")
 @Getter
 @Setter
 public class AuthUser {
@@ -63,6 +65,42 @@ public class AuthUser {
     private OffsetDateTime dateJoined;
 
     @OneToMany(mappedBy = "user")
-    private Set<AuthUserGroups> userAuthUserGroupses;
+    private Set<AuthUserGroups> userAuthUserGroups;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<DocumentsCorrespondent> ownerDocumentsCorrespondents;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<DocumentsDocumenttype> ownerDocumentsDocumenttypes;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<DocumentsStoragepath> ownerDocumentsStoragepaths;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<DocumentsTag> ownerDocumentsTags;
+
+    @OneToMany(mappedBy = "user")
+    private Set<DocumentsUisettings> userDocumentsUisettings;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<DocumentsSavedview> ownerDocumentsSavedviews;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<PaperlessMailMailaccount> ownerPaperlessMailMailaccounts;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<DocumentsDocument> ownerDocumentsDocuments;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<PaperlessMailMailrule> ownerPaperlessMailMailrules;
+
+    @OneToMany(mappedBy = "user")
+    private Set<AuthUserUserPermissions> userAuthUserUserPermissions;
+
+    @OneToMany(mappedBy = "user")
+    private Set<AuthtokenToken> userAuthtokenTokens;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<PaperlessMailProcessedmail> ownerPaperlessMailProcessedmails;
 
 }

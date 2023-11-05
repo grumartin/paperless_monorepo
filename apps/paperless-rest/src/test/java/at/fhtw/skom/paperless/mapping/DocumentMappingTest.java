@@ -1,9 +1,8 @@
 package at.fhtw.skom.paperless.mapping;
 
-import at.fhtw.swkom.paperless.mapping.DtoEntityMapperImpl;
-import at.fhtw.swkom.paperless.persistence.entities.DocumentsDocument;
+import at.fhtw.swkom.paperless.persistence.entities.*;
 import at.fhtw.swkom.paperless.mapping.DtoEntityMapper;
-//import at.fhtw.swkom.paperless.mapping.DtoEntityMapperImpl;
+import at.fhtw.swkom.paperless.mapping.DtoEntityMapperImpl;
 import at.fhtw.swkom.paperless.services.dto.Document;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DocumentMappingTest {
     @Test
-    void testDocumentEntityToDto () {
+    void testEntityToDto() {
         Integer id = 1;
         Integer correspondent = 2;
         Integer documentType = 3;
@@ -43,8 +42,10 @@ public class DocumentMappingTest {
         document.setModified(modified);
         document.setAdded(added);
         document.setArchiveSerialNumber(Integer.valueOf(archiveSerialNumber));
+
+        //when test starts both values are null
         document.setArchiveFilename(archivedFileName);
-        document.setOriginalFilename(originalFileName);
+        document.setOriginalFileName(originalFileName);
 
         // TODO:
         /*
@@ -69,6 +70,7 @@ public class DocumentMappingTest {
         expectedDocumentDto.setModified(modified);
         expectedDocumentDto.setAdded(added);
         expectedDocumentDto.setArchiveSerialNumber(JsonNullable.of(archiveSerialNumber));
+        //when test starts both values are null
         expectedDocumentDto.setArchivedFileName(JsonNullable.of(archivedFileName));
         expectedDocumentDto.setOriginalFileName(JsonNullable.of(originalFileName));
 
@@ -82,14 +84,14 @@ public class DocumentMappingTest {
          */
 
         DtoEntityMapperImpl documentMapperImpl = new DtoEntityMapperImpl();
-        Document documentDto = documentMapperImpl.documentEntityToDto(document);
+        Document documentDto = documentMapperImpl.entityToDto(document);
 
         System.out.println("Expected -----------------");
-        System.out.println(expectedDocumentDto);
+        System.out.println(expectedDocumentDto.toString());
 
         System.out.println("Actual -----------------");
-        System.out.println(documentDto);
+        System.out.println(documentDto.toString());
 
-        assertEquals(expectedDocumentDto, documentDto);
+        assertEquals(expectedDocumentDto.toString(), documentDto.toString().toString());
     }
 }

@@ -8,19 +8,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
-@Table(name = "PaperlessMailMailrules")
+@Table(name = "DocumentsTags")
 @Getter
 @Setter
-public class PaperlessMailMailrule {
+public class DocumentsTag {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -36,54 +34,39 @@ public class PaperlessMailMailrule {
     )
     private Integer id;
 
-    @Column(nullable = false, length = 256)
+    @Column(nullable = false, length = 128)
     private String name;
 
     @Column(nullable = false, length = 256)
-    private String folder;
-
-    @Column(length = 256)
-    private String filterFrom;
-
-    @Column(length = 256)
-    private String filterSubject;
-
-    @Column(length = 256)
-    private String filterBody;
+    private String match;
 
     @Column(nullable = false)
-    private Integer maximumAge;
+    private Integer matchingAlgorithm;
 
     @Column(nullable = false)
-    private Integer action;
-
-    @Column(length = 256)
-    private String actionParameter;
+    private Boolean isInsensitive;
 
     @Column(nullable = false)
-    private Integer assignTitleFrom;
+    private Boolean isInboxTag;
 
-    @Column(nullable = false)
-    private Integer assignCorrespondentFrom;
-
-    @Column(nullable = false)
-    private Integer attachmentType;
-
-    @Column(length = 256)
-    private String filterAttachmentFilename;
-
-    @Column(nullable = false)
-    private Integer consumptionScope;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private PaperlessMailMailaccount account;
+    @Column(nullable = false, length = 7)
+    private String color;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private AuthUser owner;
 
-    @OneToMany(mappedBy = "mailrule")
-    private Set<PaperlessMailMailruleAssignTags> mailrulePaperlessMailMailruleAssignTags;
-
+    @Override
+    public String toString() {
+        return "DocumentsTag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", match='" + match + '\'' +
+                ", matchingAlgorithm=" + matchingAlgorithm +
+                ", isInsensitive=" + isInsensitive +
+                ", isInboxTag=" + isInboxTag +
+                ", color='" + color + '\'' +
+                ", owner=" + owner +
+                '}';
+    }
 }

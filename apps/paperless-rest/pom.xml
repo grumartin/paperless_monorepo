@@ -57,16 +57,16 @@
                     <target>9</target> <!-- depending on your project -->
                     <annotationProcessorPaths>
                         <path>
+                            <groupId>org.projectlombok</groupId> <!-- IMPORTANT - LOMBOK BEFORE MAPSTRUCT -->
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.26</version>
+                        </path>
+                        <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${org.mapstruct.version}</version>
                         </path>
                         <!-- other annotation processors -->
-                        <path>
-                            <groupId>org.projectlombok</groupId> <!-- IMPORTANT - LOMBOK BEFORE MAPSTRUCT -->
-                            <artifactId>lombok</artifactId>
-                            <version>1.18.26</version>
-                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>

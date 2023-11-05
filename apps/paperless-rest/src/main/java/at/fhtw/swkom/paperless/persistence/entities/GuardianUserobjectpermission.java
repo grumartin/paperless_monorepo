@@ -12,10 +12,10 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "AuthPermissions")
+@Table(name = "GuardianUserobjectpermissions")
 @Getter
 @Setter
-public class AuthPermission {
+public class GuardianUserobjectpermission {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -32,12 +32,15 @@ public class AuthPermission {
     private Integer id;
 
     @Column(nullable = false)
-    private String name;
+    private String objectPk;
 
-    @Column(nullable = false, length = 100)
-    private String contentType;
+    @Column(nullable = false)
+    private Integer contentTypeId;
 
-    @Column(nullable = false, length = 100)
-    private String codename;
+    @Column(nullable = false)
+    private Integer permissionId;
+
+    @Column(nullable = false)
+    private Integer userId;
 
 }
