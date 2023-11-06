@@ -1,18 +1,17 @@
 #
 # Build stage
 #
-FROM node:latest as build
-WORKDIR /app
+FROM node:latest AS build
+WORKDIR /dist/src/app
 COPY package.json package-lock.json ./
 RUN npm cache clean --force
 COPY . .
 RUN npm install
-ARG configuration=production
-RUN npm run build -- --configuration $configuration
+RUN npm run build --prod
 
 #
 # Package stage
 #
-FROM nginx:latest
-COPY --from=build /app/dist/paperless-ui /usr/share/nginx/html
+FROM nginx:latest AS nginx
+COPY --from=build /dist/src/app/dist/paperless-ui /usr/share/nginx/html
 EXPOSE 80
