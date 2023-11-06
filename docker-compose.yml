@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: paperless-rest
     ports:
-    - 8087:8087
+    - 8080:8080
     container_name: paperless-rest
   paperless-ui:
     build:
@@ -23,13 +23,19 @@ services:
   paperless-db:
     image: postgres:latest
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=paperless
+      - POSTGRES_PASSWORD=paperless
+      - POSTGRES_DB=paperless
     ports:
       - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
     container_name: paperless-db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U paperless" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 configs:
   nginx-config:
@@ -37,4 +43,3 @@ configs:
 
 volumes:
   db:
-    driver: local

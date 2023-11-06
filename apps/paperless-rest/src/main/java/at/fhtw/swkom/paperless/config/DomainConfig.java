@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EntityScan("at.fhtw.swkom.paperless.persistence.entities")
-@EnableJpaRepositories("at.fhtw.swkom.paperless.persistence.repository")
+@EnableJpaRepositories("at.fhtw.swkom.paperless.persistence.repos")
 @EnableTransactionManagement
 public class DomainConfig {
 }
