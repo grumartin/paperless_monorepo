@@ -36,6 +36,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  paperless-queue:
+    image: rabbitmq:management
+    container_name: paperless-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=paperless
+      - RABBITMQ_DEFAULT_PASS=paperless
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+  paperless-minio:
+    image: docker.io/bitnami/minio:2022
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=paperless
+      - MINIO_ROOT_PASSWORD=paperless
+      - MINIO_DEFAULT_BUCKETS=documents
 
 configs:
   nginx-config:
@@ -43,3 +66,5 @@ configs:
 
 volumes:
   db:
+  minio_data:
+    driver: local
