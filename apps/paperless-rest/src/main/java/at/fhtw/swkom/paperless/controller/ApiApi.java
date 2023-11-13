@@ -1395,44 +1395,6 @@ public interface ApiApi {
 
 
     /**
-     * POST /api/documents/selection_data/
-     *
-     * @param selectionDataRequest  (optional)
-     * @return Success (status code 200)
-     */
-    @Operation(
-        operationId = "selectionData",
-        tags = { "Documents" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Success", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = SelectionData200Response.class))
-            })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/api/documents/selection_data/",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<SelectionData200Response> selectionData(
-        @Parameter(name = "SelectionDataRequest", description = "") @Valid @RequestBody(required = false) SelectionDataRequest selectionDataRequest
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"selected_storage_paths\" : [ { \"document_count\" : 6, \"id\" : 0 }, { \"document_count\" : 6, \"id\" : 0 } ], \"selected_document_types\" : [ { \"document_count\" : 6, \"id\" : 0 }, { \"document_count\" : 6, \"id\" : 0 } ], \"selected_correspondents\" : [ { \"document_count\" : 6, \"id\" : 0 }, { \"document_count\" : 6, \"id\" : 0 } ], \"selected_tags\" : [ { \"document_count\" : 6, \"id\" : 0 }, { \"document_count\" : 6, \"id\" : 0 } ] }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
-
-    /**
      * GET /api/statistics/
      *
      * @return Success (status code 200)
@@ -1498,46 +1460,6 @@ public interface ApiApi {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"owner\" : 5, \"matching_algorithm\" : 6, \"user_can_change\" : true, \"document_count\" : 1, \"is_insensitive\" : true, \"name\" : \"name\", \"match\" : \"match\", \"id\" : 0, \"last_correspondence\" : 5, \"slug\" : \"slug\" }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
-
-    /**
-     * PUT /api/documents/{id}/
-     *
-     * @param id  (required)
-     * @param updateDocumentRequest  (optional)
-     * @return Success (status code 200)
-     */
-    @Operation(
-        operationId = "updateDocument",
-        tags = { "Documents" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Success", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateDocument200Response.class))
-            })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.PUT,
-        value = "/api/documents/{id}/",
-        produces = { "application/json" },
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<UpdateDocument200Response> updateDocument(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id,
-        @Parameter(name = "UpdateDocumentRequest", description = "") @Valid @RequestBody(required = false) UpdateDocumentRequest updateDocumentRequest
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : 7, \"user_can_change\" : true, \"archive_serial_number\" : 2, \"notes\" : [ \"\", \"\" ], \"added\" : \"added\", \"created\" : \"created\", \"title\" : \"title\", \"content\" : \"content\", \"tags\" : [ 5, 5 ], \"storage_path\" : 5, \"archived_file_name\" : \"archived_file_name\", \"modified\" : \"modified\", \"correspondent\" : 6, \"original_file_name\" : \"original_file_name\", \"id\" : 0, \"created_date\" : \"created_date\", \"document_type\" : 1 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -1746,41 +1668,4 @@ public interface ApiApi {
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
-
-
-    /**
-     * POST /api/documents/post_document/
-     *
-     * @param title  (optional)
-     * @param created  (optional)
-     * @param documentType  (optional)
-     * @param tags  (optional)
-     * @param correspondent  (optional)
-     * @param document  (optional)
-     * @return Success (status code 200)
-     */
-    @Operation(
-        operationId = "uploadDocument",
-        tags = { "Documents" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Success")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/api/documents/post_document/",
-        consumes = { "multipart/form-data" }
-    )
-    default ResponseEntity<Void> uploadDocument(
-        @Parameter(name = "title", description = "") @Valid @RequestParam(value = "title", required = false) String title,
-        @Parameter(name = "created", description = "") @Valid @RequestParam(value = "created", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime created,
-        @Parameter(name = "document_type", description = "") @Valid @RequestParam(value = "document_type", required = false) Integer documentType,
-        @Parameter(name = "tags", description = "") @Valid @RequestPart(value = "tags", required = false) List<Integer> tags,
-        @Parameter(name = "correspondent", description = "") @Valid @RequestParam(value = "correspondent", required = false) Integer correspondent,
-        @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> document
-    ) {
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
 }

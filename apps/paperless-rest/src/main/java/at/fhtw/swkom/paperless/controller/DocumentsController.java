@@ -12,12 +12,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
+@Controller
+@RequestMapping("/api/documents/")
 public class DocumentsController implements ApiApi{
     /**
      * POST /api/documents/bulk_edit/
@@ -335,7 +340,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/api/documents/selection_data/",
+            value = "selection_data/",
             produces = { "application/json" },
             consumes = { "application/json" }
     )
@@ -373,7 +378,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.PUT,
-            value = "/api/documents/{id}/",
+            value = "{id}/",
             produces = { "application/json" },
             consumes = { "application/json" }
     )
@@ -405,6 +410,7 @@ public class DocumentsController implements ApiApi{
      * @param document  (optional)
      * @return Success (status code 200)
      */
+
     @Operation(
             operationId = "uploadDocument",
             tags = { "Documents" },
@@ -412,20 +418,15 @@ public class DocumentsController implements ApiApi{
                     @ApiResponse(responseCode = "200", description = "Success")
             }
     )
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/api/documents/post_document/",
-            consumes = { "multipart/form-data" }
-    )
-    public ResponseEntity<Void> uploadDocument(
-            @Parameter(name = "title", description = "") @Valid @RequestParam(value = "title", required = false) String title,
-            @Parameter(name = "created", description = "") @Valid @RequestParam(value = "created", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime created,
-            @Parameter(name = "document_type", description = "") @Valid @RequestParam(value = "document_type", required = false) Integer documentType,
-            @Parameter(name = "tags", description = "") @Valid @RequestPart(value = "tags", required = false) List<Integer> tags,
-            @Parameter(name = "correspondent", description = "") @Valid @RequestParam(value = "correspondent", required = false) Integer correspondent,
-            @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> document
-    ) {
+    @RequestMapping("post_document/")
+    public ResponseEntity<Void> uploadDocument(@Parameter(name = "title", description = "") @Valid @RequestParam(value = "title", required = false) String title,
+                                               @Parameter(name = "created", description = "") @Valid @RequestParam(value = "created", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime created,
+                                               @Parameter(name = "document_type", description = "") @Valid @RequestParam(value = "document_type", required = false) Integer documentType,
+                                               @Parameter(name = "tags", description = "") @Valid @RequestPart(value = "tags", required = false) List<Integer> tags,
+                                               @Parameter(name = "correspondent", description = "") @Valid @RequestParam(value = "correspondent", required = false) Integer correspondent,
+                                               @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> document) {
+        System.out.println("From DocumentsController");
+        // Fügen Sie hier Ihre eigene Implementierung hinzu.
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 }
