@@ -39,7 +39,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/api/documents/bulk_edit/",
+            value = "bulk_edit/",
             consumes = { "application/json" }
     )
     public ResponseEntity<Void> bulkEdit(
@@ -64,7 +64,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.DELETE,
-            value = "/api/documents/{id}/"
+            value = "{id}/"
     )
     public ResponseEntity<Void> deleteDocument(
             @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
@@ -91,7 +91,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/download/",
+            value = "{id}/download/",
             produces = { "application/pdf" }
     )
     public ResponseEntity<org.springframework.core.io.Resource> downloadDocument(
@@ -121,7 +121,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/",
+            value = "{id}/",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocument200Response> getDocument(
@@ -159,7 +159,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/metadata/",
+            value = "{id}/metadata/",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocumentMetadata200Response> getDocumentMetadata(
@@ -196,7 +196,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/preview/",
+            value = "{id}/preview/",
             produces = { "application/pdf" }
     )
     public ResponseEntity<org.springframework.core.io.Resource> getDocumentPreview(
@@ -224,7 +224,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/suggestions/",
+            value = "{id}/suggestions/",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocumentSuggestions200Response> getDocumentSuggestions(
@@ -261,7 +261,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/thumb/",
+            value = "{id}/thumb/",
             produces = { "application/pdf" }
     )
     public ResponseEntity<org.springframework.core.io.Resource> getDocumentThumb(
@@ -296,7 +296,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/",
+            value = "",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocuments200Response> getDocuments(
