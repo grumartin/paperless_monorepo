@@ -73,19 +73,19 @@ public class DocumentsDocument {
     @Column(length = 1024)
     private String originalFileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "correspondent_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "correspondent_id")
     private DocumentsCorrespondent correspondent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_type_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "document_type_id")
     private DocumentsDocumenttype documentType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "storage_path_id")
     private DocumentsStoragepath storagePath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "owner_id")
     private AuthUser owner;
 

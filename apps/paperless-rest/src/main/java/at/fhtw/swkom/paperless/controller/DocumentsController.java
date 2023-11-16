@@ -1,5 +1,9 @@
 package at.fhtw.swkom.paperless.controller;
 
+import at.fhtw.swkom.paperless.minio.DocumentStorage;
+import at.fhtw.swkom.paperless.persistence.entities.DocumentsDocument;
+import at.fhtw.swkom.paperless.persistence.repos.DocumentsDocumentRepository;
+import at.fhtw.swkom.paperless.rabbitmq.RabbitMQProducer;
 import at.fhtw.swkom.paperless.services.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,22 +12,32 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/api/documents/")
 public class DocumentsController implements ApiApi{
+    private final DocumentStorage documentStorage;
+    private final RabbitMQProducer rabbitMQProducer;
+    private final DocumentsDocumentRepository documentsRepository;
+
+    @Autowired
+    public DocumentsController(DocumentStorage documentStorage, RabbitMQProducer rabbitMQProducer, DocumentsDocumentRepository documentsRepository) {
+        this.documentStorage = documentStorage;
+        this.rabbitMQProducer = rabbitMQProducer;
+        this.documentsRepository = documentsRepository;
+    }
+
+
     /**
      * POST /api/documents/bulk_edit/
      *
@@ -402,12 +416,12 @@ public class DocumentsController implements ApiApi{
     /**
      * POST /api/documents/post_document/
      *
-     * @param title  (optional)
-     * @param created  (optional)
+     * @param title         (optional)
+     * @param created       (optional)
      * @param documentType  (optional)
-     * @param tags  (optional)
-     * @param correspondent  (optional)
-     * @param document  (optional)
+     * @param tags          (optional)
+     * @param correspondent (optional)
+     * @param document      (optional)
      * @return Success (status code 200)
      */
 
@@ -418,15 +432,34 @@ public class DocumentsController implements ApiApi{
                     @ApiResponse(responseCode = "200", description = "Success")
             }
     )
-    @RequestMapping("post_document/")
-    public ResponseEntity<Void> uploadDocument(@Parameter(name = "title", description = "") @Valid @RequestParam(value = "title", required = false) String title,
-                                               @Parameter(name = "created", description = "") @Valid @RequestParam(value = "created", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime created,
-                                               @Parameter(name = "document_type", description = "") @Valid @RequestParam(value = "document_type", required = false) Integer documentType,
-                                               @Parameter(name = "tags", description = "") @Valid @RequestPart(value = "tags", required = false) List<Integer> tags,
-                                               @Parameter(name = "correspondent", description = "") @Valid @RequestParam(value = "correspondent", required = false) Integer correspondent,
-                                               @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> document) {
-        System.out.println("From DocumentsController");
-        // Fügen Sie hier Ihre eigene Implementierung hinzu.
-        return new ResponseEntity<>(HttpStatus.OK);
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "post_document/",
+            consumes = { "multipart/form-data" }
+    )
+    public ResponseEntity<Map<String, Object>> uploadDocument(
+            @RequestPart("document") MultipartFile file
+    ) {
+        DocumentsDocument doc = new DocumentsDocument();
+        doc.setTitle(file.getOriginalFilename());
+        doc.setContent(file.getContentType());
+        doc.setCreated(OffsetDateTime.now());
+        doc.setModified(OffsetDateTime.now());
+        doc.setAdded(OffsetDateTime.now());
+        doc.setStorageType(file.getContentType());
+        Integer documentId = this.documentsRepository.save(doc).getId();
+        try{
+            this.documentStorage.persistObject(documentId, file);
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
+
+        this.rabbitMQProducer.sendMessage(documentId.toString());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("task_id", 123213);
+        response.put("message", "File uploaded successfully");
+
+        return ResponseEntity.ok(response);
     }
 }

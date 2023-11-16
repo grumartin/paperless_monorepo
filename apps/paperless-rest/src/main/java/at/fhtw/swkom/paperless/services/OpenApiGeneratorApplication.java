@@ -13,7 +13,13 @@ import org.springframework.context.annotation.*;
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 @ComponentScan(
-    basePackages = {"at.fhtw.swkom.paperless.services", "at.fhtw.swkom.paperless.controller" , "at.fhtw.swkom.paperless.config"},
+    basePackages = {
+            "at.fhtw.swkom.paperless.services",
+            "at.fhtw.swkom.paperless.controller" ,
+            "at.fhtw.swkom.paperless.config",
+            "at.fhtw.swkom.paperless.minio",
+            "at.fhtw.swkom.paperless.rabbitmq"
+    },
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 public class OpenApiGeneratorApplication {
