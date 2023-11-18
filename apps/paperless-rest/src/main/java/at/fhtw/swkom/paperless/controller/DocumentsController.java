@@ -23,9 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Controller
 @RequestMapping("/api/documents/")
 public class DocumentsController implements ApiApi{
+    private static final Logger logger = LoggerFactory.getLogger(DocumentsController.class);
     private final DocumentStorage documentStorage;
     private final RabbitMQProducer rabbitMQProducer;
     private final DocumentsDocumentRepository documentsRepository;
@@ -451,10 +455,21 @@ public class DocumentsController implements ApiApi{
         try{
             this.documentStorage.persistObject(documentId, file);
         }catch (Exception exception){
-            exception.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "File upload failed");
+            logger.error("Error occurred during MinIO saving:", exception);
+            return ResponseEntity.status(507).body(errorResponse);
         }
 
-        this.rabbitMQProducer.sendMessage(documentId.toString());
+        try{
+            this.rabbitMQProducer.sendMessage(documentId.toString());
+        }
+        catch(Exception exception){
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "File upload failed");
+            logger.error("Error occurred during RabbitMQ queuing:", exception);
+            return ResponseEntity.status(507).body(errorResponse);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("task_id", 123213);
