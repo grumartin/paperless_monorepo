@@ -1,5 +1,9 @@
 package at.fhtw.swkom.paperless.controller;
 
+import at.fhtw.swkom.paperless.minio.DocumentStorage;
+import at.fhtw.swkom.paperless.persistence.entities.DocumentsDocument;
+import at.fhtw.swkom.paperless.persistence.repos.DocumentsDocumentRepository;
+import at.fhtw.swkom.paperless.rabbitmq.RabbitMQProducer;
 import at.fhtw.swkom.paperless.services.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,17 +12,36 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Controller
+@RequestMapping("/api/documents/")
 public class DocumentsController implements ApiApi{
+    private static final Logger logger = LoggerFactory.getLogger(DocumentsController.class);
+    private final DocumentStorage documentStorage;
+    private final RabbitMQProducer rabbitMQProducer;
+    private final DocumentsDocumentRepository documentsRepository;
+
+    @Autowired
+    public DocumentsController(DocumentStorage documentStorage, RabbitMQProducer rabbitMQProducer, DocumentsDocumentRepository documentsRepository) {
+        this.documentStorage = documentStorage;
+        this.rabbitMQProducer = rabbitMQProducer;
+        this.documentsRepository = documentsRepository;
+    }
+
+
     /**
      * POST /api/documents/bulk_edit/
      *
@@ -34,7 +57,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/api/documents/bulk_edit/",
+            value = "bulk_edit/",
             consumes = { "application/json" }
     )
     public ResponseEntity<Void> bulkEdit(
@@ -59,7 +82,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.DELETE,
-            value = "/api/documents/{id}/"
+            value = "{id}/"
     )
     public ResponseEntity<Void> deleteDocument(
             @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
@@ -86,7 +109,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/download/",
+            value = "{id}/download/",
             produces = { "application/pdf" }
     )
     public ResponseEntity<org.springframework.core.io.Resource> downloadDocument(
@@ -116,7 +139,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/",
+            value = "{id}/",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocument200Response> getDocument(
@@ -154,7 +177,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/metadata/",
+            value = "{id}/metadata/",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocumentMetadata200Response> getDocumentMetadata(
@@ -191,7 +214,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/preview/",
+            value = "{id}/preview/",
             produces = { "application/pdf" }
     )
     public ResponseEntity<org.springframework.core.io.Resource> getDocumentPreview(
@@ -219,7 +242,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/suggestions/",
+            value = "{id}/suggestions/",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocumentSuggestions200Response> getDocumentSuggestions(
@@ -256,7 +279,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/{id}/thumb/",
+            value = "{id}/thumb/",
             produces = { "application/pdf" }
     )
     public ResponseEntity<org.springframework.core.io.Resource> getDocumentThumb(
@@ -291,7 +314,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/api/documents/",
+            value = "",
             produces = { "application/json" }
     )
     public ResponseEntity<GetDocuments200Response> getDocuments(
@@ -335,7 +358,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/api/documents/selection_data/",
+            value = "selection_data/",
             produces = { "application/json" },
             consumes = { "application/json" }
     )
@@ -373,7 +396,7 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.PUT,
-            value = "/api/documents/{id}/",
+            value = "{id}/",
             produces = { "application/json" },
             consumes = { "application/json" }
     )
@@ -397,14 +420,15 @@ public class DocumentsController implements ApiApi{
     /**
      * POST /api/documents/post_document/
      *
-     * @param title  (optional)
-     * @param created  (optional)
+     * @param title         (optional)
+     * @param created       (optional)
      * @param documentType  (optional)
-     * @param tags  (optional)
-     * @param correspondent  (optional)
-     * @param document  (optional)
+     * @param tags          (optional)
+     * @param correspondent (optional)
+     * @param document      (optional)
      * @return Success (status code 200)
      */
+
     @Operation(
             operationId = "uploadDocument",
             tags = { "Documents" },
@@ -414,18 +438,43 @@ public class DocumentsController implements ApiApi{
     )
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/api/documents/post_document/",
+            value = "post_document/",
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<Void> uploadDocument(
-            @Parameter(name = "title", description = "") @Valid @RequestParam(value = "title", required = false) String title,
-            @Parameter(name = "created", description = "") @Valid @RequestParam(value = "created", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime created,
-            @Parameter(name = "document_type", description = "") @Valid @RequestParam(value = "document_type", required = false) Integer documentType,
-            @Parameter(name = "tags", description = "") @Valid @RequestPart(value = "tags", required = false) List<Integer> tags,
-            @Parameter(name = "correspondent", description = "") @Valid @RequestParam(value = "correspondent", required = false) Integer correspondent,
-            @Parameter(name = "document", description = "") @RequestPart(value = "document", required = false) List<MultipartFile> document
+    public ResponseEntity<Map<String, Object>> uploadDocument(
+            @RequestPart("document") MultipartFile file
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        DocumentsDocument doc = new DocumentsDocument();
+        doc.setTitle(file.getOriginalFilename());
+        doc.setContent(file.getContentType());
+        doc.setCreated(OffsetDateTime.now());
+        doc.setModified(OffsetDateTime.now());
+        doc.setAdded(OffsetDateTime.now());
+        doc.setStorageType(file.getContentType());
+        Integer documentId = this.documentsRepository.save(doc).getId();
+        try{
+            this.documentStorage.persistObject(documentId, file);
+        }catch (Exception exception){
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "File upload failed");
+            logger.error("Error occurred during MinIO saving:", exception);
+            return ResponseEntity.status(507).body(errorResponse);
+        }
 
+        try{
+            this.rabbitMQProducer.sendMessage(documentId.toString());
+        }
+        catch(Exception exception){
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "File upload failed");
+            logger.error("Error occurred during RabbitMQ queuing:", exception);
+            return ResponseEntity.status(507).body(errorResponse);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("task_id", 123213);
+        response.put("message", "File uploaded successfully");
+
+        return ResponseEntity.ok(response);
     }
 }
