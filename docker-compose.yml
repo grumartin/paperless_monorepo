@@ -59,6 +59,14 @@ services:
       - MINIO_ROOT_USER=paperless
       - MINIO_ROOT_PASSWORD=paperless
       - MINIO_DEFAULT_BUCKETS=documents
+  paperless-ocr:
+    build:
+      context: ./apps/paperless-ocr
+      dockerfile: Dockerfile
+    image: paperless-ocr
+    ports:
+      - 8082:8082
+    container_name: paperless-ocr
 
 configs:
   nginx-config:
