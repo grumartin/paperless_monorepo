@@ -15,12 +15,10 @@ public class RabbitMQConfig {
 
     public static final String EXCHANGE = "";
 
-    public static final String OCR_IN_QUEUE_NAME = "OCR_In";
+    public static final String OCR_OUT_QUEUE_NAME = "OCR_Out";
 
     @Bean
-    public Queue ocrInQueue() {
-        return new Queue(OCR_IN_QUEUE_NAME, false);
-    }
+    public Queue ocrOutQueue() { return new Queue(OCR_OUT_QUEUE_NAME, false); }
 
     @Bean
     public ConnectionFactory connectionFactory(
@@ -42,7 +40,7 @@ public class RabbitMQConfig {
     ) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory(
                 hostname, username, password));
-        rabbitTemplate.setDefaultReceiveQueue(OCR_IN_QUEUE_NAME);
+        rabbitTemplate.setDefaultReceiveQueue(OCR_OUT_QUEUE_NAME);
         return rabbitTemplate;
     }
 

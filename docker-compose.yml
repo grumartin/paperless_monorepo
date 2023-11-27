@@ -59,6 +59,7 @@ services:
       - MINIO_ROOT_USER=paperless
       - MINIO_ROOT_PASSWORD=paperless
       - MINIO_DEFAULT_BUCKETS=documents
+    container_name: paperless-minio
   paperless-ocr:
     build:
       context: ./apps/paperless-ocr

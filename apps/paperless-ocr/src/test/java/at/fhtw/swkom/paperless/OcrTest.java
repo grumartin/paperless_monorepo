@@ -24,6 +24,7 @@ public class OcrTest {
         try {
             // Perform OCR on the image
             String result = tesseract.doOCR(imageFile);
+            System.out.println(result);
 
             // Expected result based on the content of your test image
             String expectedText = "Das ist ein Test.";
