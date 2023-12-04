@@ -45,6 +45,7 @@ public class TesseractOcrService implements OcrService {
             File tempFile = createTempFile(message, inputStream);
             String result = doOCR(tempFile);
             log.info(result);
+            //TODO save result in postgres DB (message is primary key of document)
         } catch (TesseractException | IOException e) {
             log.error(e.getMessage());
         }
@@ -57,7 +58,13 @@ public class TesseractOcrService implements OcrService {
     }
 
     private static File createTempFile(String fileName, InputStream is) throws IOException {
-        File tempFile = File.createTempFile(StringUtils.getFilename(fileName), ".pdf");
+        File tempDir = new File("/tmp");
+
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
+
+        File tempFile = File.createTempFile(fileName, ".pdf", tempDir);
         tempFile.deleteOnExit();
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
             byte[] buffer = new byte[1024];

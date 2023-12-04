@@ -67,6 +67,8 @@ services:
     image: paperless-ocr
     ports:
       - 8082:8082
+    environment:
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
     container_name: paperless-ocr
 
 configs:
