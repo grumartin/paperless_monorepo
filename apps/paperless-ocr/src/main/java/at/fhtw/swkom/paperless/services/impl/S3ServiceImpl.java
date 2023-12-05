@@ -1,5 +1,6 @@
 package at.fhtw.swkom.paperless.services.impl;
 
+import at.fhtw.swkom.paperless.services.S3Service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -20,7 +21,7 @@ import java.io.InputStream;
 @Profile("s3-object-storage")
 @Component
 @Slf4j
-public class S3Service implements at.fhtw.swkom.paperless.services.S3Service {
+public class S3ServiceImpl implements S3Service {
     @Autowired
     AmazonS3 s3Client;
 

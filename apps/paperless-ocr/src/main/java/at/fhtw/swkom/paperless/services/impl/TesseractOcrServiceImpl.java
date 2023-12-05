@@ -1,6 +1,7 @@
 package at.fhtw.swkom.paperless.services.impl;
 
 import at.fhtw.swkom.paperless.config.RabbitMQConfig;
+import at.fhtw.swkom.paperless.services.ContentService;
 import at.fhtw.swkom.paperless.services.OcrService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,16 +20,19 @@ import java.io.InputStream;
 
 @Component
 @Slf4j
-public class TesseractOcrService implements OcrService {
+public class TesseractOcrServiceImpl implements OcrService {
 
     private final String tesseractData;
 
-    private final S3Service s3Service;
+    private final S3ServiceImpl s3Service;
+
+    private final ContentService contentService;
 
     @Autowired
-    public TesseractOcrService(@Value("${tesseract.data}") String tessData, S3Service s3Service) {
+    public TesseractOcrServiceImpl(@Value("${tesseract.data}") String tessData, S3ServiceImpl s3Service, ContentService contentService) {
         this.tesseractData = tessData;
         this.s3Service = s3Service;
+        this.contentService = contentService;
     }
 
     @Override
@@ -41,14 +44,23 @@ public class TesseractOcrService implements OcrService {
         InputStream inputStream = this.s3Service.getObject(message);
 
         // do OCR recognition
+        String content = "";
         try {
             File tempFile = createTempFile(message, inputStream);
-            String result = doOCR(tempFile);
-            log.info(result);
-            //TODO save result in postgres DB (message is primary key of document)
+            content = doOCR(tempFile);
+
+            if(content.isEmpty()){
+                log.info("OCR returned empty string");
+                return;
+            }
+
+            log.info(content);
         } catch (TesseractException | IOException e) {
             log.error(e.getMessage());
         }
+
+        //save to DB
+        this.contentService.save(Integer.parseInt(message), content);
     }
 
     private String doOCR(File tempFile) throws TesseractException {
