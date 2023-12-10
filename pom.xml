@@ -18,6 +18,7 @@
 
     <modules>
         <module>apps/paperless-rest</module>
+        <module>apps/paperless-ocr</module>
     </modules>
 
 </project>
