@@ -61,6 +61,8 @@ public class TesseractOcrServiceImpl implements OcrService {
 
         //save to DB
         this.contentService.save(Integer.parseInt(message), content);
+
+        //TODO save to ElasticSearch
     }
 
     private String doOCR(File tempFile) throws TesseractException {
