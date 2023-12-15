@@ -62,4 +62,19 @@ public class ElasticSearchService implements SearchIndexService {
             return Optional.empty();
         }
     }
+
+    @Override
+    public boolean deleteDocumentById(int id) {
+        DeleteResponse result = null;
+        try {
+            result = esClient.delete(d -> d.index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME).id(String.valueOf(id)));
+        } catch (IOException e) {
+            log.warn("Failed to delete document id=" + id + " from elasticsearch: " + e);
+        }
+        if ( result==null )
+            return false;
+        if (result.result() != Result.Deleted )
+            log.warn(result.toString());
+        return result.result()==Result.Deleted;
+    }
 }

@@ -3,11 +3,14 @@ package at.fhtw.swkom.paperless.services.impl;
 import at.fhtw.swkom.paperless.config.RabbitMQConfig;
 import at.fhtw.swkom.paperless.services.ContentService;
 import at.fhtw.swkom.paperless.services.OcrService;
+import at.fhtw.swkom.paperless.services.SearchIndexService;
+import at.fhtw.swkom.paperless.services.dto.Document;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,16 +31,19 @@ public class TesseractOcrServiceImpl implements OcrService {
 
     private final ContentService contentService;
 
+    private final SearchIndexService searchIndexService;
+
     @Autowired
-    public TesseractOcrServiceImpl(@Value("${tesseract.data}") String tessData, S3ServiceImpl s3Service, ContentService contentService) {
+    public TesseractOcrServiceImpl(@Value("${tesseract.data}") String tessData, S3ServiceImpl s3Service, ContentService contentService, SearchIndexService searchIndexService) {
         this.tesseractData = tessData;
         this.s3Service = s3Service;
         this.contentService = contentService;
+        this.searchIndexService = searchIndexService;
     }
 
     @Override
     @RabbitListener(queues = RabbitMQConfig.OCR_OUT_QUEUE_NAME)
-    public void processMessage(String message) throws JsonProcessingException {
+    public void processMessage(String message) {
         log.info("Received Message: " + message);
 
         // fetch document from minio
@@ -63,6 +69,14 @@ public class TesseractOcrServiceImpl implements OcrService {
         this.contentService.save(Integer.parseInt(message), content);
 
         //TODO save to ElasticSearch
+        Document saveDocument= new Document();
+        JsonNullable<String> documentContentJSON= JsonNullable.of(content);
+        saveDocument.setContent(documentContentJSON);
+        try {
+            this.searchIndexService.indexDocument(saveDocument);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
     private String doOCR(File tempFile) throws TesseractException {

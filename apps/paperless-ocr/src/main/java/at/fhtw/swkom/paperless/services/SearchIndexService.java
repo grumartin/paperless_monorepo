@@ -10,4 +10,5 @@ public interface SearchIndexService {
     Result indexDocument(Document document) throws IOException;
 
     Optional<Document> getDocumentById(int id);
+    boolean deleteDocumentById(int id);
 }
