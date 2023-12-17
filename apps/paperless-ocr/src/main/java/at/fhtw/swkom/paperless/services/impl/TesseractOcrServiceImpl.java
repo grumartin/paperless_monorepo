@@ -72,6 +72,7 @@ public class TesseractOcrServiceImpl implements OcrService {
         Document saveDocument= new Document();
         JsonNullable<String> documentContentJSON= JsonNullable.of(content);
         saveDocument.setContent(documentContentJSON);
+        saveDocument.setId(Integer.parseInt(message));
         try {
             this.searchIndexService.indexDocument(saveDocument);
         } catch (IOException e) {
