@@ -70,6 +70,35 @@ services:
     environment:
       - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
     container_name: paperless-ocr
+  paperless-elastic:
+    image: elasticsearch:8.7.1
+    environment:
+      - cluster.name=es
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - 9200:9200
+      - 9300:9300
+    container_name: paperless-elastic
+  paperless-kibana:
+    image: kibana:8.7.1
+    container_name: paperless-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://paperless-elastic:9200
+    volumes:
+      - kibana-data:/usr/share/kibana/data
+    ports:
+      - 5601:5601
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+        reservations:
+          cpus: '1.0'
+    depends_on:
+      - paperless-elastic
+
 
 configs:
   nginx-config:
@@ -78,4 +107,8 @@ configs:
 volumes:
   db:
   minio_data:
+    driver: local
+  elasticsearch-data:
+    driver: local
+  kibana-data:
     driver: local
