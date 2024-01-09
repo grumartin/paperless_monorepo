@@ -432,7 +432,7 @@ public class DocumentsController implements ApiApi{
     )
     public ResponseEntity<UpdateDocument200Response> updateDocument(
             @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id,
-            @Parameter(name = "UpdateDocumentRequest", description = "") @Valid @RequestBody(required = false) UpdateDocumentRequest updateDocumentRequest
+            @Parameter(name = "UpdateDocumentRequest", description = "") @RequestBody(required = false) UpdateDocumentRequest updateDocumentRequest
     ) {
         Optional<DocumentsDocument> optionalDoc = documentsRepository.findById(id);
 
