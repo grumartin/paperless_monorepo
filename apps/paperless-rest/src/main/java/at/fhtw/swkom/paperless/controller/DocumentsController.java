@@ -96,6 +96,8 @@ public class DocumentsController implements ApiApi{
     public ResponseEntity<Void> deleteDocument(
             @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
     ) {
+        this.documentsRepository.deleteById(id);
+        logger.info("Deleted Document with id: " + id);
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
@@ -156,17 +158,22 @@ public class DocumentsController implements ApiApi{
             @Parameter(name = "page", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false) Integer page,
             @Parameter(name = "full_perms", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "full_perms", required = false) Boolean fullPerms
     ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : 7, \"archive_serial_number\" : 2, \"notes\" : [ { \"note\" : \"note\", \"created\" : \"created\", \"document\" : 1, \"id\" : 7, \"user\" : 1 }, { \"note\" : \"note\", \"created\" : \"created\", \"document\" : 1, \"id\" : 7, \"user\" : 1 } ], \"added\" : \"added\", \"created\" : \"created\", \"title\" : \"title\", \"content\" : \"content\", \"tags\" : [ 5, 5 ], \"storage_path\" : 5, \"permissions\" : { \"view\" : { \"groups\" : [ 3, 3 ], \"users\" : [ 9, 9 ] }, \"change\" : { \"groups\" : [ 3, 3 ], \"users\" : [ 9, 9 ] } }, \"archived_file_name\" : \"archived_file_name\", \"modified\" : \"modified\", \"correspondent\" : 6, \"original_file_name\" : \"original_file_name\", \"id\" : 0, \"created_date\" : \"created_date\", \"document_type\" : 1 }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.OK);
+        Optional<DocumentsDocument> optionalDoc = documentsRepository.findById(id);
 
+        if (optionalDoc.isPresent()) {
+            DocumentsDocument doc = optionalDoc.get();
+
+            GetDocument200Response response = new GetDocument200Response();
+            response.id(doc.getId());
+            response.title(doc.getTitle());
+            response.added(doc.getAdded().toString());
+            response.created(doc.getCreated().toString());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            logger.error("Couldn't get Document");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
@@ -427,17 +434,24 @@ public class DocumentsController implements ApiApi{
             @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id,
             @Parameter(name = "UpdateDocumentRequest", description = "") @Valid @RequestBody(required = false) UpdateDocumentRequest updateDocumentRequest
     ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"owner\" : 7, \"user_can_change\" : true, \"archive_serial_number\" : 2, \"notes\" : [ \"\", \"\" ], \"added\" : \"added\", \"created\" : \"created\", \"title\" : \"title\", \"content\" : \"content\", \"tags\" : [ 5, 5 ], \"storage_path\" : 5, \"archived_file_name\" : \"archived_file_name\", \"modified\" : \"modified\", \"correspondent\" : 6, \"original_file_name\" : \"original_file_name\", \"id\" : 0, \"created_date\" : \"created_date\", \"document_type\" : 1 }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.OK);
+        Optional<DocumentsDocument> optionalDoc = documentsRepository.findById(id);
 
+        if (optionalDoc.isPresent()) {
+            DocumentsDocument doc = optionalDoc.get();
+            doc.setTitle(updateDocumentRequest.getTitle());
+            documentsRepository.save(doc);
+
+            UpdateDocument200Response response = new UpdateDocument200Response();
+            response.id(doc.getId());
+            response.title(doc.getTitle());
+            response.added(doc.getAdded().toString());
+            response.created(doc.getCreated().toString());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            logger.error("Couldn't update Document");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
