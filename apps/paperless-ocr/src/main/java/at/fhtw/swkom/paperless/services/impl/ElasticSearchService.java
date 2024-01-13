@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
-//TODO store Documents
+
 @Component
 @Slf4j
 public class ElasticSearchService implements SearchIndexService {
