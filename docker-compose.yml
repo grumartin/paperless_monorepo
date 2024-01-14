@@ -20,10 +20,9 @@ services:
       - source: nginx-config
         target: /etc/nginx/nginx.conf
     container_name: paperless-ui
-
   paperless-db:
     container_name: paperless-db
-    image: postgres:14
+    image: postgres:latest
     environment:
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: paperless
