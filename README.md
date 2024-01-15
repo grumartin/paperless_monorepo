@@ -39,6 +39,7 @@ To run the Paperless Java Application using Docker Compose, follow these steps:
 ### 1. Docker Container Fails to Start
 - **Issue:** The application container doesn't start or stops immediately after starting.
 - **Solution:** Check the Docker container logs using `docker logs [container_id]`. This often provides insights into what went wrong, such as missing environment variables, incorrect configurations, or issues with dependencies.
+- **Hint**: Sometimes, the REST and OCR containers may unexpectedly stop shortly after initiation. In such cases, just restart them, and everything should function seamlessly.
 
 ### 2. Port Conflicts
 - **Issue:** Error messages indicating that the Docker container ports are already in use.
